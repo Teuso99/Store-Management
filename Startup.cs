@@ -1,9 +1,13 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using StoreManagement.Data;
+using StoreManagement.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +28,19 @@ namespace StoreManagement
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+
+            services.AddTransient<IValidator<Produto>, ProdutoValidator>();
+            services.AddTransient<IValidator<Funcionario>, FuncionarioValidator>();
+
+            var connection = Configuration.GetConnectionString("DbContext");
+            var serverVersion = new MySqlServerVersion(new Version(8, 0, 22));
+
+            services.AddDbContext<StoreManagementDbContext>(
+                dbContextOptions => dbContextOptions.UseMySql(connection, serverVersion)
+                .EnableSensitiveDataLogging() //Remove for production
+                .EnableDetailedErrors() //Remove for production
+                );
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

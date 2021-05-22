@@ -17,11 +17,16 @@ namespace StoreManagement.Data
         public DbSet<Produto> Produtos { get; set; }
         public DbSet<Funcionario> Funcionarios { get; set; }
 
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            //Seed Data
+            SeedData.Init(5);
+
+            modelBuilder.Entity<Produto>().HasData(SeedData.Produtos);
+            modelBuilder.Entity<Funcionario>().HasData(SeedData.Funcionarios);
         }
+        
     }
 }
